@@ -9,10 +9,25 @@ import "zx/globals";
 import { $ } from "zx";
 import axios from "axios";
 
-$.prefix += "export PATH=/home/ryan/.volta/bin:/home/linuxbrew/.linuxbrew/bin; export DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus; export XDG_RUNTIME_DIR=/run/user/1000; "
+/**
+ * In order for zx to run some commands like `systemctl`,
+ * as my `ryan` user, we need to ensure that the environment in the `child_process` is setup properly.
+ * @see https://github.com/google/zx#attaching-a-profile
+ *
+ * Path sets volta installed node and brew/yarn installed zx.
+ * DBUS_SESSION_BUS_ADDRESS/XDG_RUNTIME_DIR are harded coded here for docker interaction.
+ *
+ */
+const setup = [
+  "export PATH=/home/ryan/.volta/bin:/home/linuxbrew/.linuxbrew/bin",
+  "export DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus",
+  "export XDG_RUNTIME_DIR=/run/user/1000",
+];
+
+$.prefix += setup.join("; ");
 
 void (async function main() {
-  console.info(`docker liveness check ${Date.now()}`);
+  console.info(`docker liveness check ${new Date().toISOString()}`);
 
   // --
   // 1. we need to hit http://localhost
@@ -26,6 +41,7 @@ void (async function main() {
     return;
   } else if (liveness === "loading") {
     console.info("🔵 docker is loading");
+    return;
   } else {
     console.info("🟠 docker is dead");
   }
@@ -33,8 +49,7 @@ void (async function main() {
   // 2. stop docker desktop
   // ubuntu command for docker desktop: systemctl --user stop docker-desktop
 
-  const resultStop =
-    await $`systemctl --machine=ryan --user stop docker-desktop`;
+  const resultStop = await $`systemctl --user stop docker-desktop`;
 
   // 3. wait a while until docker can startup properly
   await delay(10 * 1000);
@@ -42,8 +57,7 @@ void (async function main() {
   // 4. start docker desktop
   // ubuntu command for docker desktop: systemctl --user start docker-desktop
 
-  const resultStart =
-    await $`systemctl --machine=ryan --user start docker-desktop`;
+  const resultStart = await $`systemctl --user start docker-desktop`;
 
   // 5. wait until docker comes up
   const resultDocker = await waitUntilDockerComesUp();
@@ -69,8 +83,13 @@ async function isWellKnownServiceAlive() {
   } catch (err) {
     // ECONNRESET
     if (err.code === "ECONNABORTED" || err.code === "ECONNREFUSED") {
+      // if the timeout is hit or the connect is refused actively,
+      // then we can think that docker is dead
       return "dead";
     } else if (err.code === "ECONNRESET") {
+      // if docker is loading it's possible that the script
+      // might connect to the well known canary
+      // but could get disconnected; no reason to restart the system for this case
       return "loading";
     }
 
@@ -79,13 +98,18 @@ async function isWellKnownServiceAlive() {
   }
 }
 
+/**
+ *
+ * @returns
+ */
 async function waitUntilDockerComesUp() {
   const max = 25;
   for (let i = 0; i < max; i++) {
     const v = await isWellKnownServiceAlive();
-    if (v) {
+    if (v === "alive") {
       return true;
     }
+    console.info(`🖍 docker was ${v}`);
   }
 
   return false;
