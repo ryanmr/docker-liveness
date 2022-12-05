@@ -54,7 +54,7 @@ async function isWellKnownServiceAlive() {
     await axios.get("http://localhost", { timeout: 1000 });
     return "alive";
   } catch (err) {
-    if (err.code === "ECONNABORTED") {
+    if (err.code === "ECONNABORTED" || err.code === "ECONNREFUSED") {
       return "dead";
     }
 
