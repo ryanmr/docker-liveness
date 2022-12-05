@@ -102,13 +102,13 @@ async function isWellKnownServiceAlive() {
  * @returns
  */
 async function waitUntilDockerComesUp() {
-  const max = 25;
+  const max = 50;
   for (let i = 0; i < max; i++) {
     const v = await isWellKnownServiceAlive();
+    console.info(`🖍 docker was ${v}`);
     if (v === "alive") {
       return true;
     }
-    console.info(`🖍 docker was ${v}`);
   }
 
   return false;
