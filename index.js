@@ -9,7 +9,11 @@ import "zx/globals";
 import { $ } from "zx";
 import axios from "axios";
 
+$.prefix += "export PATH=/home/ryan/.volta/bin:/home/linuxbrew/.linuxbrew/bin; export DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus; export XDG_RUNTIME_DIR=/run/user/1000; "
+
 void (async function main() {
+  console.info(`docker liveness check ${Date.now()}`);
+
   // --
   // 1. we need to hit http://localhost
   // if it doesn't reply, then it pihole is down and docker is likely dead
