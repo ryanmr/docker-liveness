@@ -5,6 +5,7 @@
   "type": "module",
   "license": "MIT",
   "dependencies": {
-    "axios": "^1.2.0"
+    "axios": "^1.2.0",
+    "zx": "^7.1.1"
   }
 }
