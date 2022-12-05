@@ -20,6 +20,8 @@ void (async function main() {
   if (liveness === "alive") {
     console.info("🟢 docker is alive");
     return;
+  } else if (liveness === "loading") {
+    console.info("🔵 docker is loading");
   } else {
     console.info("🟠 docker is dead");
   }
@@ -27,7 +29,8 @@ void (async function main() {
   // 2. stop docker desktop
   // ubuntu command for docker desktop: systemctl --user stop docker-desktop
 
-  const resultStop = await $`systemctl --user stop docker-desktop`;
+  const resultStop =
+    await $`systemctl --machine=ryan --user stop docker-desktop`;
 
   // 3. wait a while until docker can startup properly
   await delay(10 * 1000);
@@ -35,7 +38,8 @@ void (async function main() {
   // 4. start docker desktop
   // ubuntu command for docker desktop: systemctl --user start docker-desktop
 
-  const resultStart = await $`systemctl --user start docker-desktop`;
+  const resultStart =
+    await $`systemctl --machine=ryan --user start docker-desktop`;
 
   // 5. wait until docker comes up
   const resultDocker = await waitUntilDockerComesUp();
@@ -59,8 +63,11 @@ async function isWellKnownServiceAlive() {
     await axios.get("http://localhost", { timeout: 1000 });
     return "alive";
   } catch (err) {
+    // ECONNRESET
     if (err.code === "ECONNABORTED" || err.code === "ECONNREFUSED") {
       return "dead";
+    } else if (err.code === "ECONNRESET") {
+      return "loading";
     }
 
     console.warn("unknwon error occured during the liveness check");
