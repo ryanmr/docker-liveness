@@ -1,4 +1,9 @@
-#!/usr/bin/env zx
+#!/home/ryan/.volta/bin/node /home/linuxbrew/.linuxbrew/bin/zx
+
+// depending on the environment this script runs in,
+// you need to reference zx accordingly
+// the default is `#!/usr/bin/env zx`
+// but this server is special and uses volta and linuxbrew zx (installed through yarn)
 
 import "zx/globals";
 import { $ } from "zx";
