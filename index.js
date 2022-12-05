@@ -14,12 +14,11 @@ import axios from "axios";
  * as my `ryan` user, we need to ensure that the environment in the `child_process` is setup properly.
  * @see https://github.com/google/zx#attaching-a-profile
  *
- * Path sets volta installed node and brew/yarn installed zx.
+ * Path sets volta installed node and brew/yarn installed zx, and system commands.
  * DBUS_SESSION_BUS_ADDRESS/XDG_RUNTIME_DIR are harded coded here for docker interaction.
- *
  */
 const setup = [
-  "export PATH=/home/ryan/.volta/bin:/home/linuxbrew/.linuxbrew/bin",
+  "export PATH=/home/ryan/.volta/bin:/home/linuxbrew/.linuxbrew/bin::/home/linuxbrew/.linuxbrew/sbin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
   "export DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus",
   "export XDG_RUNTIME_DIR=/run/user/1000",
 ];
