@@ -117,7 +117,7 @@ async function postToDiscord() {
   const discordWebhook = process.env.DOCKER_LIVENESS_DISCORD_WEBHOOK_URL;
   await axios.post(discordWebhook, {
     content:
-      "💡 The `docker-liveness cron job` detected that docker was down is trying to restart the `docker-desktop` service.",
+      "💡 The `docker-liveness cron job` detected that docker was down is trying to restart the `docker-desktop` service. (cc <@205845828185620480>)",
     embeds: null,
     attachments: [],
   });
