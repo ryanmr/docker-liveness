@@ -20,3 +20,11 @@ Using userland `crontab -e`, we can set this `zx` script to regularly run and fi
 ```cron
 */1 * * * * /home/ryan/services/docker-liveness/index.js >> /home/ryan/services/docker-liveness/script.log 2>&1
 ```
+
+## .env
+
+Make your `.env` file with appropriate values:
+
+```
+DOCKER_LIVENESS_DISCORD_WEBHOOK_URL=
+```
