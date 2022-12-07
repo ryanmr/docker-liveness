@@ -18,7 +18,7 @@ My `docker-desktop` runs pihole among other things, but for whatever reason, `do
 Using userland `crontab -e`, we can set this `zx` script to regularly run and fix docker if it breaks.
 
 ```cron
-*/1 * * * * /home/ryan/services/docker-liveness/index.js >> /home/ryan/services/docker-liveness/script.log 2>&1
+*/1 * * * * DOTENV_CONFIG_PATH=/home/ryan/services/docker-liveness/.env DOTENV_CONFIG_DEBUG=true /home/ryan/services/docker-liveness/index.js >> /home/ryan/services/docker-liveness/script.log 2>&1
 ```
 
 ## .env
